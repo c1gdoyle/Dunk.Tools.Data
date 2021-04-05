@@ -1,0 +1,14 @@
+language: csharp
+mono: none
+dotnet: 3.1
+solution: ./Dunk.Tools.Data.sln
+
+addons:
+    sonarcloud:
+        organization: "c1gdoyle"
+
+before_install:
+- bash ./tools/travis-ci-install-sonar.sh
+
+script:
+ - bash ./tools/travis-ci-build.sh
