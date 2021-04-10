@@ -49,19 +49,19 @@ namespace Dunk.Tools.Data.Core
         /// <inheritdoc />
         public DataTable FillTable(string query, string tableName)
         {
-            return FillTable(query, tableName, new object[0], DefaultCommandTimeout, 1);
+            return FillTable(query, tableName, new DbParameter[0]);
         }
 
         /// <inheritdoc />
         public DataTable FillTable(string query, string tableName, DbParameter[] queryParameters)
         {
-            return FillTable(query, tableName, queryParameters, DefaultCommandTimeout, 1);
+            return FillTable(query, tableName, queryParameters, DefaultCommandTimeout);
         }
 
         /// <inheritdoc />
         public DataTable FillTable(string query, string tableName, int commandTimeout)
         {
-            return FillTable(query, tableName, new object[0], commandTimeout, 1);
+            return FillTable(query, tableName, new DbParameter[0], commandTimeout);
         }
 
         /// <inheritdoc />

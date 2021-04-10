@@ -86,7 +86,10 @@ namespace Dunk.Tools.Data.Test.Core
         public void SqlBulkOperationWriterUpdateQueriesInformationSchema()
         {
             List<string> commands = new List<string>();
-            const string expectedSchemaQuery = "SELECT * FROM information_schema.columns WHERE table_name = 'Students'";
+            const string expectedSchemaQuery =
+                "SELECT * " +
+                "FROM information_schema.columns " +
+                "WHERE table_name = 'Students'";
 
             Mock<IDataReader> reader = CreateDataReader();
 
@@ -115,7 +118,9 @@ namespace Dunk.Tools.Data.Test.Core
         public void SqlBulkOperationWriterUpdateCreatesTemporaryTable()
         {
             List<string> commands = new List<string>();
-            const string expectedTempTableCreateQuery = "CREATE TABLE #TempTable ([StudentId] int NOT NULL,[StudentName] varchar(100) NOT NULL,[DateOfBirth] datetime2 NOT NULL)";
+            const string expectedTempTableCreateQuery =
+                "CREATE TABLE #TempTable " +
+                "([StudentId] int NOT NULL,[StudentName] varchar(100) NOT NULL,[DateOfBirth] datetime2 NOT NULL,[TestScore] decimal(10,10) NOT NULL)";
 
             Mock<IDataReader> reader = CreateDataReader();
 
@@ -182,7 +187,11 @@ namespace Dunk.Tools.Data.Test.Core
         public void SqlBulkOperationWriterUpdateUpdatesDataInTargetTableByJoiningOnTemporaryTable()
         {
             List<string> commands = new List<string>();
-            const string expectedUpdateStatement = "UPDATE target SET target.StudentName=source.StudentName,target.DateOfBirth=source.DateOfBirth FROM Students target INNER JOIN #TempTable source ON target.StudentId = source.StudentId";
+            const string expectedUpdateStatement =
+                "UPDATE target " +
+                "SET target.StudentName=source.StudentName,target.DateOfBirth=source.DateOfBirth,target.TestScore=source.TestScore " +
+                "FROM Students target " +
+                "INNER JOIN #TempTable source ON target.StudentId = source.StudentId";
 
             Mock<IDataReader> reader = CreateDataReader();
 
@@ -213,7 +222,10 @@ namespace Dunk.Tools.Data.Test.Core
             List<string> fieldsToMatch = new List<string> { "StudentId" };
 
             List<string> commands = new List<string>();
-            const string expectedSchemaQuery = "SELECT * FROM information_schema.columns WHERE table_name = 'Students'";
+            const string expectedSchemaQuery =
+                "SELECT * " + "" +
+                "FROM information_schema.columns " +
+                "WHERE table_name = 'Students'";
 
             Mock<IDataReader> reader = CreateDataReader();
 
@@ -244,7 +256,9 @@ namespace Dunk.Tools.Data.Test.Core
             List<string> fieldsToMatch = new List<string> { "StudentId" };
 
             List<string> commands = new List<string>();
-            const string expectedTempTableCreateQuery = "CREATE TABLE #TempTable ([StudentId] int NOT NULL,[StudentName] varchar(100) NOT NULL,[DateOfBirth] datetime2 NOT NULL)";
+            const string expectedTempTableCreateQuery =
+                "CREATE TABLE #TempTable " +
+                "([StudentId] int NOT NULL,[StudentName] varchar(100) NOT NULL,[DateOfBirth] datetime2 NOT NULL,[TestScore] decimal(10,10) NOT NULL)";
 
             Mock<IDataReader> reader = CreateDataReader();
 
@@ -319,8 +333,8 @@ namespace Dunk.Tools.Data.Test.Core
                 "MERGE INTO Students AS target " +
                 "USING #TempTable AS source " +
                 "ON target.StudentId=source.StudentId " +
-                "WHEN MATCHED THEN UPDATE SET target.StudentName=source.StudentName,target.DateOfBirth=source.DateOfBirth " +
-                "WHEN NOT MATCHED THEN INSERT (StudentName,DateOfBirth) VALUES (source.StudentName,source.DateOfBirth);";
+                "WHEN MATCHED THEN UPDATE SET target.StudentName=source.StudentName,target.DateOfBirth=source.DateOfBirth,target.TestScore=source.TestScore " +
+                "WHEN NOT MATCHED THEN INSERT (StudentName,DateOfBirth,TestScore) VALUES (source.StudentName,source.DateOfBirth,source.TestScore);";
 
             Mock<IDataReader> reader = CreateDataReader();
 
@@ -349,7 +363,10 @@ namespace Dunk.Tools.Data.Test.Core
         public void SqlBulkOperationWriterDeleteQueriesInformationSchema()
         {
             List<string> commands = new List<string>();
-            const string expectedSchemaQuery = "SELECT * FROM information_schema.columns WHERE table_name = 'Students'";
+            const string expectedSchemaQuery =
+                "SELECT * " +
+                "FROM information_schema.columns " +
+                "WHERE table_name = 'Students'";
 
             Mock<IDataReader> reader = CreateDataReader();
 
@@ -378,7 +395,8 @@ namespace Dunk.Tools.Data.Test.Core
         public void SqlBulkOperationWriterDeleteCreatesTemporaryTable()
         {
             List<string> commands = new List<string>();
-            const string expectedTempTableCreateQuery = "CREATE TABLE #TempTable ([StudentId] int NOT NULL,[StudentName] varchar(100) NOT NULL,[DateOfBirth] datetime2 NOT NULL)";
+            const string expectedTempTableCreateQuery = "CREATE TABLE #TempTable " +
+                "([StudentId] int NOT NULL,[StudentName] varchar(100) NOT NULL,[DateOfBirth] datetime2 NOT NULL,[TestScore] decimal(10,10) NOT NULL)";
 
             Mock<IDataReader> reader = CreateDataReader();
 
@@ -445,7 +463,10 @@ namespace Dunk.Tools.Data.Test.Core
         public void SqlBulkOperationWriterDeleteDeletesDataFromTargetTableByJoiningOnTemporaryTable()
         {
             List<string> commands = new List<string>();
-            const string expectedDeleteStatement = "DELETE target FROM Students target INNER JOIN #TempTable source ON target.StudentId = source.StudentId";
+            const string expectedDeleteStatement =
+                "DELETE target " + "" +
+                "FROM Students target " +
+                "INNER JOIN #TempTable source ON target.StudentId = source.StudentId";
 
             Mock<IDataReader> reader = CreateDataReader();
 
@@ -474,9 +495,9 @@ namespace Dunk.Tools.Data.Test.Core
         {
             return new List<Student>
             {
-                new Student {StudentId = 1, StudentName= "Tom", DateOfBirth = DateTime.Now },
-                new Student {StudentId = 2, StudentName= "Dick", DateOfBirth = DateTime.Now },
-                new Student {StudentId = 3, StudentName= "Harry", DateOfBirth = DateTime.Now },
+                new Student {StudentId = 1, StudentName= "Tom", DateOfBirth = DateTime.Now, TestScore = 123.45m },
+                new Student {StudentId = 2, StudentName= "Dick", DateOfBirth = DateTime.Now, TestScore = 123.45m },
+                new Student {StudentId = 3, StudentName= "Harry", DateOfBirth = DateTime.Now, TestScore = 123.45m },
             };
         }
 
@@ -488,19 +509,23 @@ namespace Dunk.Tools.Data.Test.Core
                 .Returns(true)
                 .Returns(true)
                 .Returns(true)
+                .Returns(true)
                 .Returns(false);
 
             dataReader.SetupSequence(r => r["COLUMN_NAME"])
                 .Returns("StudentId")
                 .Returns("StudentName")
-                .Returns("DateOfBirth");
+                .Returns("DateOfBirth")
+                .Returns("TestScore");
 
             dataReader.SetupSequence(r => r["DATA_TYPE"])
                 .Returns("int")
                 .Returns("varchar")
-                .Returns("datetime2");
+                .Returns("datetime2")
+                .Returns("decimal");
 
             dataReader.SetupSequence(r => r["IS_NULLABLE"])
+                .Returns("NO")
                 .Returns("NO")
                 .Returns("NO")
                 .Returns("NO");
@@ -508,17 +533,20 @@ namespace Dunk.Tools.Data.Test.Core
             dataReader.SetupSequence(r => r["CHARACTER_MAXIMUM_LENGTH"])
                 .Returns(DBNull.Value.ToString())
                 .Returns("100")
+                .Returns(DBNull.Value.ToString())
                 .Returns(DBNull.Value.ToString());
 
             dataReader.SetupSequence(r => r["NUMERIC_PRECISION"])
                 .Returns(DBNull.Value.ToString())
                 .Returns("10")
-                .Returns(DBNull.Value.ToString());
+                .Returns(DBNull.Value.ToString())
+                .Returns("10");
 
             dataReader.SetupSequence(r => r["NUMERIC_SCALE"])
                 .Returns(DBNull.Value.ToString())
                 .Returns("0")
-                .Returns(DBNull.Value.ToString());
+                .Returns(DBNull.Value.ToString())
+                .Returns("10");
 
             return dataReader;
         }
@@ -530,6 +558,8 @@ namespace Dunk.Tools.Data.Test.Core
             public string StudentName { get; set; }
 
             public DateTime? DateOfBirth { get; set; }
+
+            public decimal? TestScore { get; set; }
         }
     }
 }

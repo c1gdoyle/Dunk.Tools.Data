@@ -95,21 +95,12 @@ namespace Dunk.Tools.Data.Core
             using (var bulkCopy = new SqlBulkCopy(_connection as SqlConnection))
             {
                 bulkCopy.DestinationTableName = destinationTableName;
-
-                if (BatchSize.HasValue)
-                {
-                    bulkCopy.BatchSize = BatchSize.Value;
-                }
-
-                foreach (var columnMapping in columnMappings)
-                {
-                    bulkCopy.ColumnMappings.Add(columnMapping);
-                }
+                SetupBulkCopyBatchSize(bulkCopy, BatchSize);
+                SetupBulkCopyColumnMappings(bulkCopy, columnMappings);
 
                 bulkCopy.WriteToServer(dataTable);
             }
         }
-
         private string GetDestinationTableName(DataTable dataTable)
         {
             string destinationTableName =
@@ -127,6 +118,22 @@ namespace Dunk.Tools.Data.Core
         {
             return dataTable.Columns.Cast<DataColumn>()
                 .Select(c => new SqlBulkCopyColumnMapping(c.ColumnName, c.ColumnName));
+        }
+
+        private static void SetupBulkCopyBatchSize(SqlBulkCopy bulkCopy, int? batchSize)
+        {
+            if (batchSize.HasValue)
+            {
+                bulkCopy.BatchSize = batchSize.GetValueOrDefault();
+            }
+        }
+
+        private static void SetupBulkCopyColumnMappings(SqlBulkCopy bulkCopy, IEnumerable<SqlBulkCopyColumnMapping> columnMappings)
+        {
+            foreach (var columnMapping in columnMappings)
+            {
+                bulkCopy.ColumnMappings.Add(columnMapping);
+            }
         }
     }
 }
