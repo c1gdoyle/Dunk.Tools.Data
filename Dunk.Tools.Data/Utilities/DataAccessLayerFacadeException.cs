@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Common;
+using System.Runtime.Serialization;
 
 namespace Dunk.Tools.Data.Utilities
 {
@@ -27,6 +28,11 @@ namespace Dunk.Tools.Data.Utilities
         /// <param name="innerException">The exception thrown by the datasource that is the cause of this exception.</param>
         public DataAccessLayerFacadeException(string message, DbException innerException)
             : base(message, innerException)
+        {
+        }
+
+        protected DataAccessLayerFacadeException(SerializationInfo info, StreamingContext context)
+            :base(info, context)
         {
         }
     }

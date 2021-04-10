@@ -248,7 +248,9 @@ namespace Dunk.Tools.Data.Core
 
             var numericScale = reader["NUMERIC_SCALE"].ToString();
 
-            return $"[{columName}] {dataType}{(maxLength == string.Empty ? "" : "(" + (maxLength.Equals("-1") ? "max" : maxLength) + ")")}{(numericPrecision == string.Empty || dataType != "decimal" ? "" : "(" + numericPrecision + "," + numericScale + ")")} {(isNullable ? "" : "NOT ")}NULL";
+            var maxLengthNumber = maxLength.Equals("-1") ? "max" : maxLength;
+
+            return $"[{columName}] {dataType}{(maxLength == string.Empty ? "" : "(" + (maxLengthNumber) + ")")}{(numericPrecision == string.Empty || dataType != "decimal" ? "" : "(" + numericPrecision + "," + numericScale + ")")} {(isNullable ? "" : "NOT ")}NULL";
         }
 
         private void WriteToDatabase<T>(IBulkCopy bulkCopy, IEnumerable<T> data, string tableName, int? batchSize)
