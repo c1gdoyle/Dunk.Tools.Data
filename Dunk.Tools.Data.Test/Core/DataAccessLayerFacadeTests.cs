@@ -5,6 +5,7 @@ using System.Text;
 using Dunk.Tools.Data.Base;
 using Dunk.Tools.Data.Core;
 using Dunk.Tools.Data.Test.Stubs;
+using Dunk.Tools.Data.Test.TestUtils;
 using Dunk.Tools.Data.Utilities;
 using Moq;
 using NUnit.Framework;
@@ -103,11 +104,36 @@ namespace Dunk.Tools.Data.Test.Core
         {
             Mock<IDbConnection> connection = new Mock<IDbConnection>();
             connection.Setup(c => c.CreateCommand())
-                .Throws(new DbExceptionStub());
+                .Throws(new DbStubException());
 
             IDataAccessLayerFacade facade = new DataAccessLayerFacade(() => connection.Object);
 
             Assert.Throws<DataAccessLayerFacadeException>(() => facade.FillTable("SELECT * FROM Anywhere", TableName));
+        }
+
+        [Test]
+        public void DataAccessLayerFacadeThrowsSerialisableExceptionIfQueryFails()
+        {
+            DataAccessLayerFacadeException error = null;
+            DataTable table = null;
+
+            Mock<IDbConnection> connection = new Mock<IDbConnection>();
+            connection.Setup(c => c.CreateCommand())
+                .Throws(new DbStubException());
+
+            IDataAccessLayerFacade facade = new DataAccessLayerFacade(() => connection.Object);
+
+            try
+            {
+                table = facade.FillTable("SELECT * FROM Anywhere", TableName);
+            }
+            catch (DataAccessLayerFacadeException ex)
+            {
+                error = TestSerialisationHelper.SerialiseAndDeserialiseException(ex);
+            }
+
+            Assert.IsNull(table);
+            Assert.IsNotNull(error);
         }
 
         [Test]
@@ -118,11 +144,39 @@ namespace Dunk.Tools.Data.Test.Core
             Mock<IDbConnection> connection = new Mock<IDbConnection>();
             connection.Setup(c => c.CreateCommand())
                 .Callback(() => retryCount++)
-                .Throws(new DbExceptionStub());
+                .Throws(new DbStubException());
 
             IDataAccessLayerFacade facade = new DataAccessLayerFacade(() => connection.Object);
 
             Assert.Throws<DataAccessLayerFacadeException>(() => facade.FillTable("SELECT * FROM Anywhere", TableName));
+            Assert.AreEqual(3, retryCount);
+        }
+
+        [Test]
+        public void DataAccessLayerFacadeThrowsSerialisableExceptionWhenRetryCountIsExceeded()
+        {
+            DataAccessLayerFacadeException error = null;
+            DataTable table = null;
+            int retryCount = 0;
+
+            Mock<IDbConnection> connection = new Mock<IDbConnection>();
+            connection.Setup(c => c.CreateCommand())
+                .Callback(() => retryCount++)
+                .Throws(new DbStubException());
+
+            IDataAccessLayerFacade facade = new DataAccessLayerFacade(() => connection.Object);
+
+            try
+            {
+                table = facade.FillTable("SELECT * FROM Anywhere", TableName);
+            }
+            catch (DataAccessLayerFacadeException ex)
+            {
+                error = TestSerialisationHelper.SerialiseAndDeserialiseException(ex);
+            }
+
+            Assert.IsNull(table);
+            Assert.IsNotNull(error);
             Assert.AreEqual(3, retryCount);
         }
 
