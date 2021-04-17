@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using Dunk.Tools.Data.Base;
 using Dunk.Tools.Data.Core;
 using Moq;
@@ -11,6 +12,13 @@ namespace Dunk.Tools.Data.Test.Core
     [TestFixture]
     public class SqlBulkOperationWriterTests
     {
+        [Test]
+        public void SqlBulkOperationWriterInitialises()
+        {
+            var bulkWriter = new SqlBulkOperationWriter(() => new SqlConnection());
+            Assert.IsNotNull(bulkWriter);
+        }
+
         [Test]
         public void SqlBulkOperationWriterInsertsWritesToSpecifiedTable()
         {
