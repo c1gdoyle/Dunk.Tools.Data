@@ -7,8 +7,5 @@ addons:
     sonarcloud:
         organization: "c1gdoyle"
 
-before_install:
-- bash ./tools/travis-ci-install-sonar.sh
-
 script:
  - bash ./tools/travis-ci-build.sh
