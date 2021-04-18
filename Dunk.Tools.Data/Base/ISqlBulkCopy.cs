@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -17,6 +18,7 @@ namespace Dunk.Tools.Data.Base
         /// </summary>
         /// <param name="table">The <see cref="DataTable"/> whose rows will be copied to the destination table.</param>
         /// <param name="columnMappings">The column mappings to use to copy the data to the destination table.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="table"/> was null.</exception>
         void WriteToServer(DataTable table, IEnumerable<SqlBulkCopyColumnMapping> columnMappings);
 
         /// <summary>
@@ -26,6 +28,7 @@ namespace Dunk.Tools.Data.Base
         /// <param name="table">The <see cref="DataTable"/> whose rows will be copied to the destination table.</param>
         /// <param name="columnMappings">The column mappings to use to copy the data to the destination table.</param>
         /// <param name="destinationTableName">The name of the destination table to write the data to.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="table"/> was null.</exception>
         void WriteToServer(DataTable table, IEnumerable<SqlBulkCopyColumnMapping> columnMappings, string destinationTableName);
     }
 }

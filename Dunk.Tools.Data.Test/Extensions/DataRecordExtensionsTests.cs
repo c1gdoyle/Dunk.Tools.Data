@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Dunk.Tools.Data.Extensions;
 using NUnit.Framework;
 
@@ -12,6 +8,20 @@ namespace Dunk.Tools.Data.Test.Extensions
     [TestFixture]
     public class DataRecordExtensionsTests
     {
+        [Test]
+        public void ReaderGetValueOrDefaultThrowsIfRecordIsNull()
+        {
+            IDataRecord record = null;
+            Assert.Throws<ArgumentNullException>(() => record.GetValueOrDefault<bool>(0));
+        }
+
+        [Test]
+        public void ReaderGetValueOrDefaultColumnNameThrowsIfRecordIsNull()
+        {
+            IDataRecord record = null;
+            Assert.Throws<ArgumentNullException>(() => record.GetValueOrDefault<bool>("boolean_Column"));
+        }
+
         [Test]
         public void ReaderGetValueOrDefaultGetsValueForColumnIndex()
         {
@@ -91,6 +101,20 @@ namespace Dunk.Tools.Data.Test.Extensions
         }
 
         [Test]
+        public void ReaderGetNullableValueThrowsIfRecordIsNull()
+        {
+            IDataRecord record = null;
+            Assert.Throws<ArgumentNullException>(() => record.GetNullableValue<bool>(0));
+        }
+
+        [Test]
+        public void ReaderGetNullableValueColumnThrowsIfRecordIsNull()
+        {
+            IDataRecord record = null;
+            Assert.Throws<ArgumentNullException>(() => record.GetNullableValue<bool>("boolean_Column"));
+        }
+
+        [Test]
         public void ReaderGetNullableValueGetsValueForColumnIndex()
         {
             const bool booleanValue = true;
@@ -166,6 +190,20 @@ namespace Dunk.Tools.Data.Test.Extensions
             DataTableReader reader = new DataTableReader(table);
             reader.Read();
             Assert.Throws<InvalidCastException>(() => reader.GetNullableValue<char>(columnName));
+        }
+
+        [Test]
+        public void ReaderHasColumnThrowsIfRecordIsNull()
+        {
+            IDataRecord record = null;
+            Assert.Throws<ArgumentNullException>(() => record.HasColumn(0));
+        }
+
+        [Test]
+        public void ReaderHasColumnColumnNameThrowsIfRecordIsNull()
+        {
+            IDataRecord record = null;
+            Assert.Throws<ArgumentNullException>(() => record.HasColumn("boolean_Column"));
         }
 
         [Test]

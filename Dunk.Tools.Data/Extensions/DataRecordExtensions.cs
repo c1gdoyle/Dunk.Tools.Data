@@ -18,10 +18,16 @@ namespace Dunk.Tools.Data.Extensions
         /// The value retrieved from the data-record or the default value of <typeparamref name="T"/> if
         /// the cell was <see cref="DBNull.Value"/>.
         /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="record"/> was null.</exception>
         /// <exception cref="InvalidCastException">The value in the data-record was not <see cref="DBNull"/> but could not be case to an instance of <typeparamref name="T"/>.</exception>
         /// <exception cref="IndexOutOfRangeException">The index passed was outside the range of 0 through <see cref="IDataRecord.FieldCount"/>.</exception>
         public static T GetValueOrDefault<T>(this IDataRecord record, int columnIndex)
         {
+            if(record == null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
             if (!record.IsDBNull(columnIndex))
             {
                 return record.GetDataValue<T>(columnIndex);
@@ -39,10 +45,16 @@ namespace Dunk.Tools.Data.Extensions
         /// The value retrieved from the data-record or the default value of <typeparamref name="T"/> if
         /// the cell was <see cref="DBNull.Value"/>.
         /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="record"/> was null.</exception>
         /// <exception cref="InvalidCastException">The value in the data-record was not <see cref="DBNull"/> but could not be case to an instance of <typeparamref name="T"/>.</exception>
         /// <exception cref="IndexOutOfRangeException">The index passed was outside the range of 0 through <see cref="IDataRecord.FieldCount"/>.</exception>
         public static T GetValueOrDefault<T>(this IDataRecord record, string columnName)
         {
+            if (record == null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
             int columnIndex = record.GetOrdinal(columnName);
             if (!record.IsDBNull(columnIndex))
             {
@@ -61,11 +73,17 @@ namespace Dunk.Tools.Data.Extensions
         /// A <see cref="Nullable{T}"/> representing the value in the data-record. If the value in the cell
         /// was not <see cref="DBNull.Value"/> will contain the value; otherwise will contain no value.
         /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="record"/> was null.</exception>
         /// <exception cref="InvalidCastException">The value in the data-record was not <see cref="DBNull"/> but could not be case to an instance of <typeparamref name="T"/>.</exception>
         /// <exception cref="IndexOutOfRangeException">The index passed was outside the range of 0 through <see cref="IDataRecord.FieldCount"/>.</exception>
         public static T? GetNullableValue<T>(this IDataRecord record, int columnIndex)
             where T : struct
         {
+            if (record == null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
             if (!record.IsDBNull(columnIndex))
             {
                 return record.GetDataValue<T>(columnIndex);
@@ -84,11 +102,17 @@ namespace Dunk.Tools.Data.Extensions
         /// A <see cref="Nullable{T}"/> representing the value in the data-record. If the value in the cell
         /// was not <see cref="DBNull.Value"/> will contain the value; otherwise will contain no value.
         /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="record"/> was null.</exception>
         /// <exception cref="InvalidCastException">The value in the data-record was not <see cref="DBNull"/> but could not be case to an instance of <typeparamref name="T"/>.</exception>
         /// <exception cref="IndexOutOfRangeException">The index passed was outside the range of 0 through <see cref="IDataRecord.FieldCount"/>.</exception>
         public static T? GetNullableValue<T>(this IDataRecord record, string columnName)
             where T : struct
         {
+            if (record == null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
             int columnIndex = record.GetOrdinal(columnName);
             if (!record.IsDBNull(columnIndex))
             {
@@ -103,8 +127,14 @@ namespace Dunk.Tools.Data.Extensions
         /// <param name="record">The data-record.</param>
         /// <param name="columnIndex">The column index we are checking for.</param>
         /// <returns>True if the given columnIndex was not negative and less than the record's fieldCount. Otherwise returns false.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="record"/> was null.</exception>
         public static bool HasColumn(this IDataRecord record, int columnIndex)
         {
+            if (record == null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
             int fieldCount = record.FieldCount;
 
             return columnIndex < fieldCount && columnIndex >= 0;
@@ -116,11 +146,17 @@ namespace Dunk.Tools.Data.Extensions
         /// <param name="record">The data-record.</param>
         /// <param name="columnName">The name of the column we are checking for.</param>
         /// <returns>True if we were able to match the given columnName to a field in the record. Otherwise returns false.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="record"/> was null.</exception>
         public static bool HasColumn(this IDataRecord record, string columnName)
         {
+            if (record == null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
             for (int i = 0; i < record.FieldCount; i++)
             {
-                if (record.GetName(i).Equals(columnName, StringComparison.InvariantCultureIgnoreCase))
+                if (record.GetName(i) == columnName)
                 {
                     return true;
                 }

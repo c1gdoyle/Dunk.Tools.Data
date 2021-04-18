@@ -31,6 +31,7 @@ namespace Dunk.Tools.Data.Base
         /// The destination table is specified by either the <see cref="DestinationTableName"/> property of this object
         /// or the <see cref="DataTable.TableName"/> property of the supplied <paramref name="table"/>.
         /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="table"/> was null.</exception>
         void WriteToServer(DataTable table);
 
         /// <summary>
@@ -41,6 +42,7 @@ namespace Dunk.Tools.Data.Base
         /// <remarks>
         /// The destination table is specified by either the <see cref="DestinationTableName"/> property of this object.
         /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="items"/> was null.</exception>
         void WriteToServer<T>(IEnumerable<T> items)
             where T : class;
 
@@ -55,6 +57,7 @@ namespace Dunk.Tools.Data.Base
         /// <remarks>
         /// The destination table is specified by either the <see cref="DestinationTableName"/> property of this object.
         /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="items"/> or <paramref name="filter"/> was null.</exception>
         void WriteToServer<T>(IEnumerable<T> items, Func<PropertyInfo, bool> filter)
             where T : class;
     }

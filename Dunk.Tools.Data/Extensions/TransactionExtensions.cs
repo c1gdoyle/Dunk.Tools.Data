@@ -28,6 +28,7 @@ namespace Dunk.Tools.Data.Extensions
         /// <returns>
         /// <c>true</c> if the transaction is successfully committed; otherwise returns <c>false</c>.
         /// </returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("csharpsquid", "CA1031:Support generic catch for transaction")]
         public static bool TryCommitTransaction(this DbTransaction transaction, Action<Exception> errorHandler)
         {
             if (transaction == null)
@@ -73,6 +74,7 @@ namespace Dunk.Tools.Data.Extensions
         /// <returns>
         /// <c>true</c> if the transaction is successfully rolled back; otherwise returns <c>false</c>.
         /// </returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("csharpsquid", "CA1031:Support generic catch for transaction")]
         public static bool TryRollbackTransaction(this DbTransaction transaction, Action<Exception> errorHandler)
         {
             if (transaction == null)
