@@ -37,8 +37,8 @@ namespace Dunk.Tools.Data.Test.Extensions
 
             DataTable table = items.ToDataTable();
 
-            Assert.IsTrue(table.Columns.Contains("Id"));
-            Assert.IsTrue(table.Columns.Contains("Date"));
+            Assert.IsTrue(table.Columns.Contains(nameof(TestDataItem.Id)));
+            Assert.IsTrue(table.Columns.Contains(nameof(TestDataItem.Date)));
         }
 
         [Test]
@@ -53,8 +53,8 @@ namespace Dunk.Tools.Data.Test.Extensions
 
             DataTable table = items.ToDataTable();
 
-            Assert.AreEqual(typeof(int), table.Columns["Id"].DataType);
-            Assert.AreEqual(typeof(DateTime), table.Columns["Date"].DataType);
+            Assert.AreEqual(typeof(int), table.Columns[nameof(TestDataItem.Id)].DataType);
+            Assert.AreEqual(typeof(DateTime), table.Columns[nameof(TestDataItem.Date)].DataType);
         }
 
         [Test]
@@ -69,7 +69,7 @@ namespace Dunk.Tools.Data.Test.Extensions
 
             DataTable table = items.ToDataTable();
 
-            Assert.IsFalse(table.Columns.Contains("ItemTags"));
+            Assert.IsFalse(table.Columns.Contains(nameof(TestDataItem.ItemTags)));
         }
 
         [Test]
@@ -101,8 +101,8 @@ namespace Dunk.Tools.Data.Test.Extensions
 
             DataRow row = table.Rows[0];
 
-            Assert.AreEqual(1, (int)row["Id"]);
-            Assert.AreEqual(new DateTime(2017, 03, 06), (DateTime)row["Date"]);
+            Assert.AreEqual(1, (int)row[nameof(TestDataItem.Id)]);
+            Assert.AreEqual(new DateTime(2017, 03, 06), (DateTime)row[nameof(TestDataItem.Date)]);
         }
 
         [Test]
@@ -117,7 +117,7 @@ namespace Dunk.Tools.Data.Test.Extensions
 
             DataTable table = items.ToDataTable();
 
-            Assert.AreEqual(typeof(double), table.Columns["Price"].DataType);
+            Assert.AreEqual(typeof(double), table.Columns[nameof(TestDateItemsWithNullableProps.Price)].DataType);
         }
 
         [Test]
@@ -134,7 +134,7 @@ namespace Dunk.Tools.Data.Test.Extensions
 
             DataRow row = table.Rows[2];
 
-            Assert.AreEqual(DBNull.Value, row["Price"]);
+            Assert.AreEqual(DBNull.Value, row[nameof(TestDateItemsWithNullableProps.Price)]);
         }
 
         [Test]
@@ -151,8 +151,8 @@ namespace Dunk.Tools.Data.Test.Extensions
 
             DataTable table = items.ToDataTable(filter);
 
-            Assert.IsTrue(!table.Columns.Contains("ItemsTags"));
-            Assert.IsTrue(!table.Columns.Contains("Price"));
+            Assert.IsTrue(!table.Columns.Contains(nameof(TestDataItemWithVirtualProps.ItemTags)));
+            Assert.IsTrue(!table.Columns.Contains(nameof(TestDataItemWithVirtualProps.Price)));
         }
 
         [Test]
@@ -169,7 +169,7 @@ namespace Dunk.Tools.Data.Test.Extensions
 
             DataTable table = items.ToDataTable(filter);
 
-            Assert.IsTrue(!table.Columns.Contains("HistoricDates"));
+            Assert.IsTrue(!table.Columns.Contains(nameof(TestDataItemWithVirtualProps.HistoricDates)));
         }
 
         private class TestDataItem
@@ -178,6 +178,7 @@ namespace Dunk.Tools.Data.Test.Extensions
 
             public DateTime Date { get; set; }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("csharpsquid", "S1144: Ignore for test object")]
             public ICollection<string> ItemTags { get; set; }
         }
 
@@ -191,6 +192,7 @@ namespace Dunk.Tools.Data.Test.Extensions
 
             public virtual ICollection<string> ItemTags { get; set; }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("csharpsquid", "S1144: Ignore for test object")]
             public ICollection<DateTime> HistoricDates { get; set; }
         }
 
