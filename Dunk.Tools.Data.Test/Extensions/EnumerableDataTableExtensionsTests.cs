@@ -11,6 +11,38 @@ namespace Dunk.Tools.Data.Test.Extensions
     public class EnumerableDataTableExtensionsTests
     {
         [Test]
+        public void EnumerableToDataTableThrowsIfEnumerableIsNull()
+        {
+            IEnumerable<TestDataItem> items = null;
+
+            Assert.Throws<ArgumentNullException>(() => items.ToDataTable());
+        }
+
+        [Test]
+        public void EnumerableToDataTableWithFilterThrowsIfEnumerableIsNull()
+        {
+            IEnumerable<TestDataItem> items = null;
+
+            Assert.Throws<ArgumentNullException>(() => items.ToDataTable(p => true));
+        }
+
+        [Test]
+        public void ListToDataTableThrowsIfListIsNull()
+        {
+            List<TestDataItem> items = null;
+
+            Assert.Throws<ArgumentNullException>(() => items.ToDataTable());
+        }
+
+        [Test]
+        public void ListToDataTableWithFilterThrowsIfListIsNull()
+        {
+            List<TestDataItem> items = null;
+
+            Assert.Throws<ArgumentNullException>(() => items.ToDataTable(p => true));
+        }
+
+        [Test]
         public void EnumerableToDataTableReturnsTable()
         {
             IEnumerable<TestDataItem> items = new List<TestDataItem>

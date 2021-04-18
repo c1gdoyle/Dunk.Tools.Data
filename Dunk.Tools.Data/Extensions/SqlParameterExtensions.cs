@@ -52,15 +52,15 @@ namespace Dunk.Tools.Data.Extensions
         /// <exception cref="ArgumentException"><paramref name="parameterName"/> was null or empty.</exception>
         public static SqlParameter ToSqlParameter<T>(this T value, string parameterName)
         {
-            if (string.IsNullOrEmpty(parameterName) ||
-                string.IsNullOrWhiteSpace(parameterName))
+            if (string.IsNullOrWhiteSpace(parameterName) ||
+                 parameterName.Length == 0)
             {
                 throw new ArgumentException($"Unable to convert to SqlParameter, {nameof(parameterName)} cannot be null or empty",
                     nameof(parameterName));
             }
             return value != null ?
-                new SqlParameter(parameterName.ToUpper(), value) :
-                new SqlParameter(parameterName.ToUpper(), DBNull.Value);
+                new SqlParameter(parameterName.ToUpperInvariant(), value) :
+                new SqlParameter(parameterName.ToUpperInvariant(), DBNull.Value);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Dunk.Tools.Data.Extensions
         /// A list of <see cref="SqlParameter"/>s based on the <paramref name="obj"/>.
         /// </returns>
         /// <exception cref="ArgumentNullException"><paramref name="obj"/> was be null.</exception>
-        public static List<SqlParameter> ToSqlParametersList<T>(this T obj)
+        public static IList<SqlParameter> ToSqlParametersList<T>(this T obj)
             => ToSqlParameters(obj).ToList();
 
         /// <summary>

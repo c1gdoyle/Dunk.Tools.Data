@@ -42,9 +42,15 @@ namespace Dunk.Tools.Data.Extensions
         /// A <see cref="DataTable"/> that contains data matching the elements in the
         /// input sequence.
         /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="source"/> was null.</exception>
         public static DataTable ToDataTable<T>(this IEnumerable<T> source)
             where T : class
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source),
+                    $"Unable to convert to DataTable, {nameof(source)} parameter cannot be null.");
+            }
             return ToDataTable(source.ToList());
         }
 
@@ -59,9 +65,15 @@ namespace Dunk.Tools.Data.Extensions
         /// A <see cref="DataTable"/> that contains data matching the elements in the
         /// input sequence.
         /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="source"/> was null.</exception>
         public static DataTable ToDataTable<T>(this IEnumerable<T> source, Func<PropertyInfo, bool> filter)
             where T : class
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source),
+                    $"Unable to convert to DataTable, {nameof(source)} parameter cannot be null.");
+            }
             return ToDataTable(source.ToList(), filter);
         }
 
@@ -75,9 +87,15 @@ namespace Dunk.Tools.Data.Extensions
         /// A <see cref="DataTable"/> that contains data matching the elements in the
         /// input sequence.
         /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="source"/> was null.</exception>
         public static DataTable ToDataTable<T>(this IList<T> source)
             where T : class
         {
+            if(source == null)
+            {
+                throw new ArgumentNullException(nameof(source),
+                    $"Unable to convert to DataTable, {nameof(source)} parameter cannot be null.");
+            }
             var properties = typeof(T).GetProperties()
                 .Where(p => IsBasicType(p.PropertyType));
 
@@ -95,9 +113,20 @@ namespace Dunk.Tools.Data.Extensions
         /// A <see cref="DataTable"/> that contains data matching the elements in the
         /// input sequence.
         /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="filter"/> was null.</exception>
         public static DataTable ToDataTable<T>(this IList<T> source, Func<PropertyInfo, bool> filter)
             where T : class
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source),
+                    $"Unable to convert to DataTable, {nameof(source)} parameter cannot be null.");
+            }
+            if (filter == null)
+            {
+                throw new ArgumentNullException(nameof(filter),
+                    $"Unable to convert to DataTable, {nameof(filter)} parameter cannot be null.");
+            }
             var properties = typeof(T).GetProperties()
                 .Where(filter)
                 .Where(p => IsBasicType(p.PropertyType));

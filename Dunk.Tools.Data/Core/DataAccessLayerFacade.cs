@@ -49,7 +49,7 @@ namespace Dunk.Tools.Data.Core
         /// <inheritdoc />
         public DataTable FillTable(string query, string tableName)
         {
-            return FillTable(query, tableName, new DbParameter[0]);
+            return FillTable(query, tableName, Array.Empty<DbParameter>());
         }
 
         /// <inheritdoc />
@@ -61,7 +61,7 @@ namespace Dunk.Tools.Data.Core
         /// <inheritdoc />
         public DataTable FillTable(string query, string tableName, int commandTimeout)
         {
-            return FillTable(query, tableName, new DbParameter[0], commandTimeout);
+            return FillTable(query, tableName, Array.Empty<DbParameter>(), commandTimeout);
         }
 
         /// <inheritdoc />
@@ -91,12 +91,14 @@ namespace Dunk.Tools.Data.Core
             return FillTable(query, dataTableName, queryParameters, commandTimeout, ++retryCount);
         }
 
-        private DataTable FillTable(IDbConnection connection, string query, string dataTableName, object[] queryParameters, int commandTimeout)
+        private static DataTable FillTable(IDbConnection connection, string query, string dataTableName, object[] queryParameters, int commandTimeout)
         {
             OpenConnection(connection);
             using (IDbCommand cmd = connection.CreateCommand())
             {
-                cmd.CommandText = string.Format(query, queryParameters);
+                cmd.CommandText = string.Format(System.Globalization.CultureInfo.InvariantCulture, 
+                    query, 
+                    queryParameters);
                 cmd.CommandTimeout = commandTimeout;
 
                 using (IDataReader reader = cmd.ExecuteReader())
@@ -106,7 +108,7 @@ namespace Dunk.Tools.Data.Core
             }
         }
 
-        private DataTable PopulateDataTable(IDataReader reader, string dataTableName)
+        private static DataTable PopulateDataTable(IDataReader reader, string dataTableName)
         {
             int count = 0;
             DataTable table = null;
@@ -123,7 +125,7 @@ namespace Dunk.Tools.Data.Core
             return table;
         }
 
-        private DataTable CreateTable(IDataReader reader)
+        private static DataTable CreateTable(IDataReader reader)
         {
             var table = new DataTable();
 
@@ -134,14 +136,14 @@ namespace Dunk.Tools.Data.Core
             return table;
         }
 
-        private void AddDataColumn(IDataReader reader, DataTable table, int index)
+        private static void AddDataColumn(IDataReader reader, DataTable table, int index)
         {
             string columnName = reader.GetName(index);
             Type columnType = reader.GetFieldType(index);
             table.Columns.Add(columnName, columnType);
         }
 
-        private void AddDataRow(IDataReader reader, DataTable table)
+        private static void AddDataRow(IDataReader reader, DataTable table)
         {
             DataRow row = table.NewRow();
 
@@ -152,7 +154,7 @@ namespace Dunk.Tools.Data.Core
             table.Rows.Add(row);
         }
 
-        private void OpenConnection(IDbConnection connection)
+        private static void OpenConnection(IDbConnection connection)
         {
             if (connection.State != ConnectionState.Open)
             {
@@ -160,7 +162,7 @@ namespace Dunk.Tools.Data.Core
             }
         }
 
-        private bool RetriesExceeded(int retryCount)
+        private static bool RetriesExceeded(int retryCount)
         {
             if (retryCount == 3)
             {

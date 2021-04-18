@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Reflection;
 using Dunk.Tools.Data.Core;
 using Dunk.Tools.Data.Extensions;
 using Dunk.Tools.Data.Test.Stubs;
@@ -37,6 +38,61 @@ namespace Dunk.Tools.Data.Test.Core
             var bulkCopy = new SqlBulkCopyAdapter(connection.Object);
 
             Assert.IsNotNull(bulkCopy);
+        }
+
+        [Test]
+        public void BulkCopyWriteToServerThrowsIfTableIsNull()
+        {
+            DataTable table = null;
+
+            Mock<IDbConnection> connection = new Mock<IDbConnection>();
+            connection.Setup(c => c.State).Returns(ConnectionState.Open);
+
+            var bulkCopy = new SqlBulkCopyAdapter(connection.Object);
+
+            Assert.Throws<ArgumentNullException>(() => bulkCopy.WriteToServer(table));
+        }
+
+        [Test]
+        public void BulkCopyWriteToServerThrowsIfItemsIsNull()
+        {
+            IEnumerable<TestDataItem> items = null;
+
+            Mock<IDbConnection> connection = new Mock<IDbConnection>();
+            connection.Setup(c => c.State).Returns(ConnectionState.Open);
+
+            var bulkCopy = new SqlBulkCopyAdapter(connection.Object);
+
+            Assert.Throws<ArgumentNullException>(() => bulkCopy.WriteToServer(items));
+
+        }
+
+        [Test]
+        public void BulkCopyWriteToServerThrowsIfFilterIsNull()
+        {
+            IEnumerable<TestDataItem> items = new List<TestDataItem>();
+            Func<PropertyInfo, bool> filter = null;
+
+            Mock<IDbConnection> connection = new Mock<IDbConnection>();
+            connection.Setup(c => c.State).Returns(ConnectionState.Open);
+
+            var bulkCopy = new SqlBulkCopyAdapter(connection.Object);
+
+            Assert.Throws<ArgumentNullException>(() => bulkCopy.WriteToServer(items, filter));
+        }
+
+        [Test]
+        public void BulkCopySqlWriteServerThrowsIfTableIsNull()
+        {
+            DataTable table = null;
+
+            Mock<IDbConnection> connection = new Mock<IDbConnection>();
+            connection.Setup(c => c.State).Returns(ConnectionState.Open);
+
+            var bulkCopy = new SqlBulkCopyAdapter(connection.Object);
+
+            Assert.Throws<ArgumentNullException>(() => bulkCopy.WriteToServer(table, Array.Empty<SqlBulkCopyColumnMapping>()));
+            Assert.Throws<ArgumentNullException>(() => bulkCopy.WriteToServer(table, Array.Empty<SqlBulkCopyColumnMapping>(), string.Empty));
         }
 
         [Test]

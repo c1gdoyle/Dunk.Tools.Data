@@ -55,6 +55,10 @@ namespace Dunk.Tools.Data.Core
         /// <inheritdoc />
         public virtual void WriteToServer(DataTable table)
         {
+            if(table == null)
+            {
+                throw new ArgumentNullException(nameof(table));
+            }
             var columnMappings = GetColumnMappings(table);
             WriteToServer(table, columnMappings);
         }
@@ -70,7 +74,10 @@ namespace Dunk.Tools.Data.Core
         public virtual void WriteToServer<T>(IEnumerable<T> items, Func<PropertyInfo, bool> filter)
             where T : class
         {
-            WriteToServer(items.ToDataTable(filter));
+            using (var dt = items.ToDataTable(filter))
+            {
+                WriteToServer(dt);
+            }
         }
         #endregion IBulkCopy Members
 
@@ -79,6 +86,10 @@ namespace Dunk.Tools.Data.Core
         /// <inheritdoc />
         public virtual void WriteToServer(DataTable table, IEnumerable<SqlBulkCopyColumnMapping> columnMappings)
         {
+            if (table == null)
+            {
+                throw new ArgumentNullException(nameof(table));
+            }
             string destinationTableName = GetDestinationTableName(table);
             WriteToServer(table, columnMappings, destinationTableName);
         }
@@ -86,6 +97,10 @@ namespace Dunk.Tools.Data.Core
         /// <inheritdoc />
         public virtual void WriteToServer(DataTable table, IEnumerable<SqlBulkCopyColumnMapping> columnMappings, string destinationTableName)
         {
+            if (table == null)
+            {
+                throw new ArgumentNullException(nameof(table));
+            }
             WriteToServerInternal(table, columnMappings, destinationTableName);
         }
         #endregion ISqlBulkCopy Members
@@ -101,6 +116,7 @@ namespace Dunk.Tools.Data.Core
                 bulkCopy.WriteToServer(dataTable);
             }
         }
+        
         private string GetDestinationTableName(DataTable dataTable)
         {
             string destinationTableName =
@@ -114,7 +130,7 @@ namespace Dunk.Tools.Data.Core
             return destinationTableName;
         }
 
-        private IEnumerable<SqlBulkCopyColumnMapping> GetColumnMappings(DataTable dataTable)
+        private static IEnumerable<SqlBulkCopyColumnMapping> GetColumnMappings(DataTable dataTable)
         {
             return dataTable.Columns.Cast<DataColumn>()
                 .Select(c => new SqlBulkCopyColumnMapping(c.ColumnName, c.ColumnName));

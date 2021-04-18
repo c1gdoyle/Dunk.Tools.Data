@@ -70,7 +70,7 @@ namespace Dunk.Tools.Data.Core
 
                     StringBuilder sbPrimaryKeys = new StringBuilder();
                     sbPrimaryKeys.Append(string.Join(" AND ", primaryKeys
-                        .Select(pk => string.Format("target.{0} = source.{0}", pk))));
+                        .Select(pk => $"target.{pk} = source.{pk}")));
 
                     //update target table using data in temporary table
                     command.CommandText = $"UPDATE target SET {string.Join(",", updateClauses.UpdateValuesClauses)} FROM {tableName} target INNER JOIN #TempTable source ON {sbPrimaryKeys.ToString()}";
@@ -83,6 +83,10 @@ namespace Dunk.Tools.Data.Core
         public void BulkUpsert<T>(IEnumerable<T> data, string tableName, string[] primaryKeys, ICollection<string> fieldsToMatch, int? batchSize = null)
             where T : class
         {
+            if(fieldsToMatch == null)
+            {
+                throw new ArgumentNullException(nameof(fieldsToMatch));
+            }
             using (var connection = _connectionFactory())
             {
                 connection.Open();
@@ -128,7 +132,7 @@ namespace Dunk.Tools.Data.Core
 
                     StringBuilder sbPrimaryKeys = new StringBuilder();
                     sbPrimaryKeys.Append(string.Join(" AND ", primaryKeys
-                        .Select(pk => string.Format("target.{0} = source.{0}", pk))));
+                        .Select(pk => $"target.{pk} = source.{pk}")));
 
                     //delete data in target table by joining on temporary table
                     command.CommandText = $"DELETE target FROM {tableName} target INNER JOIN #TempTable source ON {sbPrimaryKeys.ToString()}";
@@ -138,7 +142,7 @@ namespace Dunk.Tools.Data.Core
         }
         #endregion IBulkOperationWriter Members
 
-        private UpdateClauses GetUpdateClausesFromInformationSchema(IDbCommand command, string tableName, string[] primaryKeys, ICollection<string> fieldsToUpdate = null)
+        private static UpdateClauses GetUpdateClausesFromInformationSchema(IDbCommand command, string tableName, string[] primaryKeys, ICollection<string> fieldsToUpdate = null)
         {
             var updateClauses = new UpdateClauses();
             HashSet<string> pks = new HashSet<string>(primaryKeys);
@@ -176,7 +180,7 @@ namespace Dunk.Tools.Data.Core
             return updateClauses;
         }
 
-        private UpsertClauses GetUpsertClausesFromInformationSchema(IDbCommand command, string tableName, string[] primaryKeys, ICollection<string> fieldsToMatch)
+        private static UpsertClauses GetUpsertClausesFromInformationSchema(IDbCommand command, string tableName, string[] primaryKeys, ICollection<string> fieldsToMatch)
         {
             var upsertClauses = new UpsertClauses();
             HashSet<string> pks = new HashSet<string>(primaryKeys);
@@ -216,7 +220,7 @@ namespace Dunk.Tools.Data.Core
             return upsertClauses;
         }
 
-        private DeleteClauses GetDeleteClausesFromInformationSchema(IDbCommand command, string tableName)
+        private static DeleteClauses GetDeleteClausesFromInformationSchema(IDbCommand command, string tableName)
         {
             var deleteClauses = new DeleteClauses();
 
@@ -236,7 +240,7 @@ namespace Dunk.Tools.Data.Core
             return deleteClauses;
         }
 
-        private string GetCreateTableClause(IDataReader reader, string columName)
+        private static string GetCreateTableClause(IDataReader reader, string columName)
         {
             var dataType = reader["DATA_TYPE"].ToString();
 
@@ -248,12 +252,12 @@ namespace Dunk.Tools.Data.Core
 
             var numericScale = reader["NUMERIC_SCALE"].ToString();
 
-            var maxLengthNumber = maxLength.Equals("-1") ? "max" : maxLength;
+            var maxLengthNumber = maxLength == "-1" ? "max" : maxLength;
 
-            return $"[{columName}] {dataType}{(maxLength == string.Empty ? "" : "(" + (maxLengthNumber) + ")")}{(numericPrecision == string.Empty || dataType != "decimal" ? "" : "(" + numericPrecision + "," + numericScale + ")")} {(isNullable ? "" : "NOT ")}NULL";
+            return $"[{columName}] {dataType}{(string.IsNullOrEmpty(maxLength) ? "" : "(" + (maxLengthNumber) + ")")}{(string.IsNullOrEmpty(numericPrecision) || dataType != "decimal" ? "" : "(" + numericPrecision + "," + numericScale + ")")} {(isNullable ? "" : "NOT ")}NULL";
         }
 
-        private void WriteToDatabase<T>(IBulkCopy bulkCopy, IEnumerable<T> data, string tableName, int? batchSize)
+        private static void WriteToDatabase<T>(IBulkCopy bulkCopy, IEnumerable<T> data, string tableName, int? batchSize)
             where T : class
         {
             if (batchSize.HasValue)
@@ -262,8 +266,10 @@ namespace Dunk.Tools.Data.Core
             }
 
             bulkCopy.DestinationTableName = tableName;
-            var dt = data.ToDataTable(p => p.GetGetMethod().IsVirtual || p.GetGetMethod().IsFinal);
-            bulkCopy.WriteToServer(dt);
+            using (var dt = data.ToDataTable(p => p.GetGetMethod().IsVirtual || p.GetGetMethod().IsFinal))
+            {
+                bulkCopy.WriteToServer(dt);
+            }
         }
 
         private class UpsertClauses

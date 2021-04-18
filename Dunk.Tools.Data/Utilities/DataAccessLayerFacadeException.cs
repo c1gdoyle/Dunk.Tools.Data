@@ -12,6 +12,13 @@ namespace Dunk.Tools.Data.Utilities
     public class DataAccessLayerFacadeException : Exception
     {
         /// <summary>
+        /// Initialises a new default instance of <see cref="DataAccessLayerFacadeException"/>.
+        /// </summary>
+        public DataAccessLayerFacadeException()
+        {
+        }
+
+        /// <summary>
         /// Initialises a new instance of <see cref="DataAccessLayerFacadeException"/> with a specified message.
         /// </summary>
         /// <param name="message">The exception message.</param>
@@ -26,7 +33,7 @@ namespace Dunk.Tools.Data.Utilities
         /// </summary>
         /// <param name="message">The exception message.</param>
         /// <param name="innerException">The exception thrown by the datasource that is the cause of this exception.</param>
-        public DataAccessLayerFacadeException(string message, DbException innerException)
+        public DataAccessLayerFacadeException(string message, Exception innerException)
             : base(message, innerException)
         {
         }
